@@ -47,6 +47,10 @@ std::string read_File2String(std::string const& filename);
 bool copy_File(std::string const& source, std::string const& target);
 bool rename_File(std::string const& source, std::string const& target);
 
+#if defined(PREDEF_PLATFORM_UNIX)
+bool chown_File(std::string const& filename, uid_t owner, gid_t group);
+bool chmod_File(std::string const& filename, mode_t mode);
+#endif
 /**
  * @brief read_from_File - Open File and fill supplied buffer
  * @return true on error e.g. file does not exist, failed to open, or is smaller than the buffer

@@ -128,6 +128,41 @@ bool File_Fkt::rename_File(std::string const& source, std::string const& target)
   return err;
 }
 
+#if defined(PREDEF_PLATFORM_UNIX)
+/**
+ * @brief File_Fkt::chown_File
+ * @param filename
+ * @param owner
+ * @param group
+ * @return
+ */
+bool File_Fkt::chown_File(std::string const& filename, uid_t owner, gid_t group){
+  bool err=false;
+  if(0>chown(filename.c_str(), owner, group)){
+    std::cout << std::strerror(errno) << '\n';
+    err = true;
+  }
+  return err;
+}
+
+/**
+ * @brief File_Fkt::chmod_File
+ * @param filename
+ * @param mode
+ * @param flag
+ * @return
+ */
+bool File_Fkt::chmod_File(const std::string &filename, mode_t mode){
+  bool err=false;
+  if(0>chmod(filename.c_str(), mode)){
+    std::cout << std::strerror(errno) << '\n';
+    err = true;
+  }
+  return err;
+}
+
+#endif
+
 bool File_Fkt::write_block(const std::string &filename, std::pair<std::unique_ptr<u8[]>, size_t> buffer, size_t offset)
 {
   bool err = true;
@@ -200,3 +235,5 @@ int countLine(char* sourcefile){
   while(infile.getline(data,100)) line++;
   return line;
 }*/
+
+
