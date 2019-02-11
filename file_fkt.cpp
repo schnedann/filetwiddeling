@@ -235,5 +235,3 @@ int countLine(char* sourcefile){
   while(infile.getline(data,100)) line++;
   return line;
 }*/
-
-

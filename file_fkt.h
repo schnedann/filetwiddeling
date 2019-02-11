@@ -43,14 +43,11 @@ namespace File_Fkt {
 std::pair<bool,size_t> getFileSize(std::string const& filename);
 std::pair<bool,size_t> getBlockSize(std::string const& filename);
 //template<size_t CNT> bool read_from_File(std::string  const& filename, std::array<u8,CNT>& buffer);
-std::string read_File2String(std::string const& filename);
-bool copy_File(std::string const& source, std::string const& target);
-bool rename_File(std::string const& source, std::string const& target);
 
-#if defined(PREDEF_PLATFORM_UNIX)
-bool chown_File(std::string const& filename, uid_t owner, gid_t group);
-bool chmod_File(std::string const& filename, mode_t mode);
-#endif
+//-----
+
+std::string read_File2String(std::string const& filename);
+
 /**
  * @brief read_from_File - Open File and fill supplied buffer
  * @return true on error e.g. file does not exist, failed to open, or is smaller than the buffer
@@ -77,6 +74,18 @@ template<size_t CNT> bool read_from_File(std::string  const& filename, std::arra
 
 bool write_block(std::string const& filename, std::pair<std::unique_ptr<u8[]>,size_t> buffer, size_t offset);
 std::pair<bool,std::pair<std::unique_ptr<u8[]>,size_t>> read_block(std::string const& filename, size_t offset, size_t length);
+
+//-----
+
+bool copy_File(std::string const& source, std::string const& target);
+bool rename_File(std::string const& source, std::string const& target);
+
+#if defined(PREDEF_PLATFORM_UNIX)
+bool chown_File(std::string const& filename, uid_t owner, gid_t group);
+bool chmod_File(std::string const& filename, mode_t mode);
+#endif
+
+//-----
 
 }
 
