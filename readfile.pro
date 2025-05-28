@@ -1,13 +1,22 @@
 TEMPLATE = app
-CONFIG += console c++14
+CONFIG += console c++23
 CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp \
-    file_fkt.cpp
+    $$PWD/src/main.cpp \
+    $$PWD/src/file_fkt.cpp
 
 HEADERS += \
-    file_fkt.h \
-    dtypes.h \
-    posix_detect.h
+    $$PWD/inc/file_fkt.h \
+    $$PWD/inc/dtypes.h \
+    $$PWD/inc/posix_detect.h
+
+INCLUDEPATH += \
+    $$PWD/inc
+
+DISTFILES += \
+  .gitignore \
+  .gitattributes \
+  CMakeLists.txt \
+  build.sh

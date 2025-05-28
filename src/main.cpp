@@ -6,8 +6,8 @@
 
 using namespace std;
 
-int main()
-{
+int main(){
+
   array<u8,12> buff{};
   cout << File_Fkt::read_from_File<12>("dummy.txt",buff) << "\n";
   cout << std::string(buff.begin(),buff.end()) << endl;

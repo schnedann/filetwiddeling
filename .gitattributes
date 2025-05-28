@@ -1,0 +1,26 @@
+# Set default text handling
+# behavior automatically normalize line endings
+* text=auto
+
+# Force UTF-8 encoding for certain file types
+*.md text encoding=utf-8
+*.txt text encoding=utf-8
+
+# Force LF line endings for C++ source files
+*.cpp text eol=lf
+*.h text eol=lf
+
+# Force CRLF line endings for Windows batch files
+*.bat text eol=crlf
+
+# Specify binary files
+*.png binary encoding=binary
+*.jpg binary encoding=binary
+*.gif binary encoding=binary
+
+# Set Unix line endings for shell scripts
+*.sh text eol=lf
+
+# Ignore compressed archives from exports
+*.tgz export-ignore
+*.zip export-ignore

@@ -1,28 +1,172 @@
-# Compiled Object files
-*.slo
-*.lo
+# Build directory
+/build/
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Qt Creator specific files
+*.pro.user
+*.pro.user.*
+*.pro.user.*.user
+*.moc
+*.ui
+*.qrc
+*.qmlc
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.exe
+*.dSYM/
+*.pdb
+*.idb
+*.ilk
+*.log
+
+# Compiled object files
 *.o
 *.obj
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Backup files
+*~
+*.bak
+*.swp
 
-# Fortran module files
-*.mod
+# Temporary files
+*.tmp
+*.temp
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
 
-# Executables
-*.exe
-*.out
-*.app
+# Other files
+*.DS_Store
+*.class
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.gz
+*.bz2
+*.xz
+*.lz
+*.lzma
+*.z
+*.tgz
+*.tbz2
+*.tbz
+*.txz
+*.tz
+*.tz2
+*.tz3
+*.tz4
+*.tz5
+*.tz6
+*.tz7
+*.tz8
+*.tz9
+*.tz10
+*.tz11
+*.tz12
+*.tz13
+*.tz14
+*.tz15
+*.tz16
+*.tz17
+*.tz18
+*.tz19
+*.tz20
+*.tz21
+*.tz22
+*.tz23
+*.tz24
+*.tz25
+*.tz26
+*.tz27
+*.tz28
+*.tz29
+*.tz30
+*.tz31
+*.tz32
+*.tz33
+*.tz34
+*.tz35
+*.tz36
+*.tz37
+*.tz38
+*.tz39
+*.tz40
+*.tz41
+*.tz42
+*.tz43
+*.tz44
+*.tz45
+*.tz46
+*.tz47
+*.tz48
+*.tz49
+*.tz50
+*.tz51
+*.tz52
+*.tz53
+*.tz54
+*.tz55
+*.tz56
+*.tz57
+*.tz58
+*.tz59
+*.tz60
+*.tz61
+*.tz62
+*.tz63
+*.tz64
+*.tz65
+*.tz66
+*.tz67
+*.tz68
+*.tz69
+*.tz70
+*.tz71
+*.tz72
+*.tz73
+*.tz74
+*.tz75
+*.tz76
+*.tz77
+*.tz78
+*.tz79
+*.tz80
+*.tz81
+*.tz82
+*.tz83
+*.tz84
+*.tz85
+*.tz86
+*.tz87
+*.tz88
+*.tz89
+*.tz90
+*.tz91
+*.tz92
+*.tz93
+*.tz94
+*.tz95
+*.tz96
+*.tz97
+*.tz98
+*.tz99
+*.tz100
