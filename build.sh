@@ -33,7 +33,7 @@ cmake --build $DIR -- -j4
 if [ $? -eq 0 ]; then
     # Command succeeded, execute further commands
     echo "The build was successful."
-    ls -l $DIR
+    ls -l $DIR/bin
 else
     # Command failed, handle the error
     echo "The build failed."
