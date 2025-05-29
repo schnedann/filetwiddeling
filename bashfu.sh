@@ -1,5 +1,25 @@
 #!/bin/bash
 
+function test_print {
+# Print a red dot
+echo -e "\e[31m•\e[0m"
+
+# Print a green dot
+echo -e "\e[32m•\e[0m"
+
+# Print a red filled circle
+echo -e "\e[31\u25CF\e[0m"
+
+# Print a green filled circle
+echo -e "\e[32m\u25CF\e[0m"
+
+# Print a red empty circle
+echo -e "\e[31m\u25CB\e[0m"
+
+# Print a green empty circle
+echo -e "\e[32m\u25CB\e[0m"
+}
+
 ####################################################
 # Ansi Color Codes
 ####################################################
@@ -260,6 +280,12 @@ GITLOL="log --graph --decorate --pretty=oneline --abbrev-commit -n 20"
 
 function git_info_about_repository {
 cd $1
+# Check if we are in a detached HEAD state
+if ! git symbolic-ref -q HEAD; then
+  echo -e "\e[31m\u25CF\e[0m You are in a detached HEAD state."
+else
+  echo -e "\e[32m\u25CF\e[0m You are on a branch."
+fi
 printf "%s---> Remotes <---%s\n" $magenta $reset
 git remote -v
 printf "%s---> Branches <---%s\n" $magenta $reset

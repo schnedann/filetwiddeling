@@ -1,5 +1,7 @@
 # Build directory
 /build/
+# External dependencies
+/external/
 # CMake files
 CMakeCache.txt
 CMakeFiles/
