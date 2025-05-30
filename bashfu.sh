@@ -12,6 +12,7 @@ echo -e "\e[31\u25CF\e[0m"
 
 # Print a green filled circle
 echo -e "\e[32m\u25CF\e[0m"
+#printf "\e[32m\u25CF\e[0m\n"
 
 # Print a red empty circle
 echo -e "\e[31m\u25CB\e[0m"
@@ -307,3 +308,19 @@ git "$GITLOLA"
 ####################################################
 #
 ####################################################
+
+function git_branch_info {
+
+  if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    if [ "$(git symbolic-ref --short -q HEAD)" = "" ]; then
+      #echo "The repository is in a deteached Head state."
+      printf "%s %s" "$(printf "\e[33m\u25CF\e[0m")" "$(printf "\e[93m\uE0A0 deteached Head state\e[0m")"
+    elif [ -z "$(git status --porcelain)" ]; then
+      #echo "The repository is clean."
+      printf "%s %s %s%s" "$(printf "\e[32m\u25CF\e[0m")" "$(printf "\e[92m\uE0A0")" "$(printf "$(git branch --show current)")" "$(printf "\e[0m")"
+    else
+      #echo "The repository has uncommitted changes."
+      printf "%s %s %s%s" "$(printf "\e[31m\u25CF\e[0m")" "$(printf "\e[97m\uE0A0")" "$(printf "$(git branch --show current)")" "$(printf "\e[0m")"
+    fi
+  fi
+}

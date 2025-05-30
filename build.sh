@@ -139,6 +139,8 @@ fi
 #-----
 
 # Prompt the user
+git_branch_info
+echo "\n"
 echo "Press any key to continue or wait for $timeout_duration seconds..."
 # Use read with a timeout
 read -t $timeout_duration -n 1 key
