@@ -1,71 +1,78 @@
-/*
- *  Copyright (c) 2019,Danny Schneider
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
- *
- *  * Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #ifndef FILE_FKT_H
 #define FILE_FKT_H
 
+//for Copyright see this file
+#include "modified_4Cbsd.h"
+
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <array>
 #include <fstream>
 #include <memory>
 #include <utility>
 
-#include "posix_detect.h"
+#include "enviroment_detection.h"
 
 #include "dtypes.h"
 
+#include "enviroment_detection.h"
+#if (0<dIS_MINGW)
+#include <boost/filesystem.hpp>
+namespace fs=boost::filesystem;
+#else
+#include <filesystem>
+namespace fs=std::filesystem;
+#endif
+
 namespace File_Fkt {
 
-std::pair<bool,size_t> getFileSize(std::string const& filename);
-std::pair<bool,size_t> getBlockSize(std::string const& filename);
-//template<size_t CNT> bool read_from_File(std::string  const& filename, std::array<u8,CNT>& buffer);
+/**
+ * @brief getFileSize
+ * @param filename
+ * @return
+ */
+std::pair<bool,size_t> getFileSize(std::string_view const filename);
+
+#if defined(PREDEF_PLATFORM_UNIX)
+
+/**
+ * @brief getBlockSize
+ * @param filename
+ * @return
+ */
+std::pair<bool,size_t> getBlockSize(std::string_view const filename);
+
+#endif
 
 //-----
 
-std::string read_File2String(std::string const& filename);
+/**
+ * @brief read_File2String
+ * @param path2file
+ * @return
+ */
+std::string read_File2String(fs::path const path2file);
 
 /**
  * @brief read_from_File - Open File and fill supplied buffer
  * @return true on error e.g. file does not exist, failed to open, or is smaller than the buffer
  */
-template<size_t CNT> bool read_from_File(std::string  const& filename, std::array<u8,CNT>& buffer){
+template<size_t CNT> bool read_from_File(fs::path const path2file,
+                    std::array<u8,CNT>& buffer){
   bool err = true;
-  auto fsize = getFileSize(filename);
+  auto fsize = getFileSize(path2file.string());
   if(!fsize.first){
     if(fsize.second>=buffer.size()){
       try {
-        std::ifstream file(filename, std::ios::binary | std::ios::in);
+        std::ifstream file(path2file, std::ios::binary | std::ios::in);
         if(file){
           file.read(reinterpret_cast<char*>(buffer.data()),long(buffer.size()));
           file.close();
           err = false;
         }
       } catch(const std::exception& e){
-        std::cout << e.what();
+        std::cerr << e.what();
       }
     }
   }
@@ -73,16 +80,56 @@ template<size_t CNT> bool read_from_File(std::string  const& filename, std::arra
 }
 
 bool write_block(std::string const& filename, std::pair<std::unique_ptr<u8[]>,size_t> buffer, size_t offset);
-std::pair<bool,std::pair<std::unique_ptr<u8[]>,size_t>> read_block(std::string const& filename, size_t offset, size_t length);
+
+/**
+ * @brief File_Fkt::read_block
+ * @param filename
+ * @param offset
+ * @param length
+ * @return returns a pointer to a self managed, self destructing intermeadiate buffer if first element is false
+ *         error if first element is true
+ */
+std::pair<bool,std::pair<std::unique_ptr<u8[]>,size_t>> read_block(fs::path const path2file,
+                                                                   size_t offset,
+                                                                   size_t length);
 
 //-----
 
-bool copy_File(std::string const& source, std::string const& target);
-bool rename_File(std::string const& source, std::string const& target);
+/**
+ * @brief copy_File
+ * @param path2source - Source File Name
+ * @param path2target - Target File Name
+ * @return true on Error
+ */
+bool copy_File(fs::path const path2source, fs::path const path2target);
+
+/**
+ * @brief rename_File
+ * @param path2source - File 2 Rename
+ * @param path2target - Target File Name
+ * @return true on Error
+ */
+bool rename_File(fs::path const path2source, fs::path const path2target);
+
+//-----
 
 #if defined(PREDEF_PLATFORM_UNIX)
-bool chown_File(std::string const& filename, uid_t owner, gid_t group);
-bool chmod_File(std::string const& filename, mode_t mode);
+/**
+ * @brief chown_File
+ * @param path2file
+ * @param owner
+ * @param group
+ * @return
+ */
+bool chown_File(fs::path const path2file, uid_t owner, gid_t group);
+
+/**
+ * @brief chmod_File
+ * @param path2file
+ * @param mode
+ * @return
+ */
+bool chmod_File(fs::path const path2file, mode_t mode);
 #endif
 
 //-----

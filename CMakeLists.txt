@@ -63,7 +63,11 @@ add_executable(filetwiddeling ${SOURCE_FILES})
 
 # Add include directories
 target_include_directories(filetwiddeling
-  PUBLIC inc
+  PUBLIC
+  inc
+  the_framework/enviroment
+  the_framework/copyright
+  the_framework/macros
   PRIVATE src
 )
 

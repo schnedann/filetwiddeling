@@ -1,6 +1,9 @@
 #ifndef POSIX_DETECT_H
 #define POSIX_DETECT_H
 
+//for Copyright see this file
+#include "modified_4Cbsd.h"
+
 //Code by https://sourceforge.net/p/predef/wiki/Standards/
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
