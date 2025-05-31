@@ -2,11 +2,14 @@
 #include <iomanip>
 #include <array>
 #include <string>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <set>
 #include <ranges>
 #include <cmath>
+#include <format>
+#include <chrono>
 
 #include "dtypes.h"
 #include "file_fkt.h"
@@ -206,6 +209,62 @@ int main(int argc, char* argv[]){
         return;
       };
 
+      std::vector<std::string> permissions_lst(file_lst.size());
+      {
+        size_t idx = 0;
+        for(auto const& entry:file_lst){
+
+          if(!entry.is_directory() &&
+             !entry.is_socket() &&
+             !entry.is_symlink() &&
+             !entry.is_other()){
+            auto perms = std::filesystem::status(entry).permissions();
+
+            auto perm2str = [](std::string& str, std::filesystem::perms const& pperms){
+              std::stringstream ss;
+              using std::filesystem::perms;
+              auto show = [&ss, &pperms](char op, perms perm)
+              {
+                ss << (perms::none == (perm & pperms) ? '-' : op);
+              };
+              show('r', perms::owner_read);
+              show('w', perms::owner_write);
+              show('x', perms::owner_exec);
+              show('r', perms::group_read);
+              show('w', perms::group_write);
+              show('x', perms::group_exec);
+              show('r', perms::others_read);
+              show('w', perms::others_write);
+              show('x', perms::others_exec);
+
+              str = ss.str();
+
+              return;
+            };
+
+            perm2str(permissions_lst.at(idx),perms);
+          }
+
+          ++idx;
+        }
+
+        //---
+
+        size_t maxl = 0;
+        for(auto const& str:permissions_lst){
+          size_t tmp = str.size();
+          if(maxl < tmp){
+            maxl = tmp;
+          }
+        }
+
+        //---
+
+        for(auto& str:permissions_lst){
+          str_extend(str,maxl);
+        }
+      }
+
       std::vector<std::string> what_entry_lst(file_lst.size());
       {
         size_t idx = 0;
@@ -252,14 +311,17 @@ int main(int argc, char* argv[]){
         for(auto& str:what_entry_lst){
           str_extend(str,maxl);
         }
-      }
+      } //scope
 
       std::vector<std::string> file_size_lst(file_lst.size());
       {
         size_t idx = 0;
         for(auto const& entry:file_lst){
 
-          if(!entry.is_directory() && !entry.is_socket()){
+          if(!entry.is_directory() &&
+             !entry.is_socket() &&
+             !entry.is_symlink() &&
+             !entry.is_other()){
 
             auto fsize = entry.file_size();
             size_t ii=0;
@@ -313,7 +375,7 @@ int main(int argc, char* argv[]){
         for(auto& str:file_size_lst){
           str_extend(str,maxl);
         }
-      }
+      } //scope
 
       {
         size_t idx_width = 1 + std::log10(file_lst.size());
@@ -322,11 +384,17 @@ int main(int argc, char* argv[]){
         for(auto const& entry:file_lst){
           auto path = entry.path().string();
           str_extend(path,path_maxl);
-          std::cout << "[" << std::setw(idx_width) << idx << "]  " << path << "| " << file_size_lst.at(idx) << "| " << what_entry_lst.at(idx) << "| " << '\n';
+          std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
+          std::cout << "[" << std::setw(idx_width) << idx << "]  " << path << "| "
+                    << file_size_lst.at(idx) << "| "
+                    << what_entry_lst.at(idx) << "| "
+                    << permissions_lst.at(idx) << "| "
+                    << std::format("{}", ftime)
+                    << '\n';
 
           ++idx;
         }
-      }
+      } //scope
 
       std::cout << file_lst.size() << " Entries found" << '\n';
 
