@@ -1,7 +1,18 @@
 TEMPLATE = app
-CONFIG += console c++23
+CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+
+QMAKE_CXXFLAGS_DEBUG   += -Wall -Wextra -std=c++23 -rdynamic
+#-fprofile-arcs -ftest-coverage
+#-save-temps -Wa,-adhln -g
+#QMAKE_CXXFLAGS_RELEASE += -Wall -Wextra -std=c++23 -Ofast -fexpensive-optimizations -mtune=native -march=native -flto -funroll-loops -frename-registers  -Wformat -Wformat-security -fpic -shared -fasynchronous-unwind-tables -D_GLIBCXX_ASSERTIONS -fstack-clash-protection -fstack-protector-all -fcf-protection -pipe -msse3
+QMAKE_CXXFLAGS_RELEASE += -Wall -Wextra -std=c++23 -O3 -mtune=native -march=native -msse2 -rdynamic
+
+QMAKE_LFLAGS_DEBUG   += -Wl,-z,now -Wl,-z,relro
+QMAKE_LFLAGS_RELEASE += -Wl,-z,now -Wl,-z,relro
+
+QMAKE_LFLAGS += -Wl,-Map=CountbitSet.map
 
 SOURCES += \
     $$PWD/src/main.cpp \
@@ -34,7 +45,9 @@ INCLUDEPATH += \
     $$PWD/inc \
     $$PWD/the_framework/enviroment \
     $$PWD/the_framework/copyright \
-    $$PWD/the_framework/macros
+    $$PWD/the_framework/macros \
+    $$PWD/external/cxxopts/include \
+    $$PWD/external/GSL/include
 
 
 DISTFILES += \
