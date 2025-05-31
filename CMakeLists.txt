@@ -68,6 +68,8 @@ target_include_directories(filetwiddeling
   the_framework/enviroment
   the_framework/copyright
   the_framework/macros
+  external/cxxopts/include
+  external/GSL/include
   PRIVATE src
 )
 
