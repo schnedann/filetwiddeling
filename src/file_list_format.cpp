@@ -147,8 +147,45 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
 }
 
 std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::directory_entry> const& list){
-  std::vector<std::string> file_size_lst(list.size());
+  std::vector<std::string> file_size_lst(1 + list.size());
   {
+    auto const fsize_fmt = [](size_t const fsize)->std::string{
+      auto lfsize = fsize;
+      size_t ii=0;
+      static constexpr size_t const onekB = 1024;
+      while(onekB <= lfsize){
+        lfsize /= onekB;
+        ++ii;
+      }
+
+      std::string file_size = std::to_string(lfsize);
+      switch (ii) {
+      case 0:
+        file_size += " Byte";
+        break;
+      case 1:
+        file_size += " kB";
+        break;
+      case 2:
+        file_size += " MB";
+        break;
+      case 3:
+        file_size += " GB";
+        break;
+      case 4:
+        file_size += " TB";
+        break;
+      case 5:
+        file_size += " PB";
+        break;
+      default:
+        file_size = std::to_string(fsize) + " Byte";
+        break;
+      }
+      return file_size;
+    };
+
+    size_t size_all = 0;
     size_t idx = 0;
     for(auto const& entry:list){
 
@@ -158,41 +195,19 @@ std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::d
          !entry.is_other()){
 
         auto fsize = entry.file_size();
-        size_t ii=0;
-        static constexpr size_t const onekB = 1024;
-        while(onekB <= fsize){
-          fsize /= onekB;
-          ++ii;
-        }
-        std::string file_size = std::to_string(fsize);
-        switch (ii) {
-        case 0:
-          file_size += " Byte";
-          break;
-        case 1:
-          file_size += " kB";
-          break;
-        case 2:
-          file_size += " MB";
-          break;
-        case 3:
-          file_size += " GB";
-          break;
-        case 4:
-          file_size += " TB";
-          break;
-        case 5:
-          file_size += " PB";
-          break;
-        default:
-          file_size = (entry.file_size()) + " Byte";
-          break;
-        }
+        size_all += fsize;
+
+        auto const file_size = fsize_fmt(fsize);
 
         file_size_lst.at(idx) = file_size;
       }
 
       ++idx;
+    }
+
+    {
+      auto const file_size = fsize_fmt(size_all);
+      file_size_lst.at(idx) = file_size;
     }
 
     //---
@@ -228,20 +243,18 @@ std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::direct
     size_t idx = 0;
     for(auto const& entry:list){
       auto path = entry.path().string();
+      auto file = std::string("    ") + entry.path().filename().string();
 
       if(!entry.is_directory()){
-        path = "    " + path;
-      }
-
-      str_extend(path,path_maxl);
-
-      if(!entry.is_directory()){
-        path = std::string(Utility::AnsiColor::fgwhite) + std::string(Utility::AnsiColor::bold_on) + path + std::string(Utility::AnsiColor::reset_all);
+        str_extend(file,path_maxl);
+        file = std::string(Utility::AnsiColor::fgwhite) + std::string(Utility::AnsiColor::bold_on) + file + std::string(Utility::AnsiColor::reset_all);
+        path_lst.at(idx) = file;
       }else{
+        str_extend(path,path_maxl);
         path = std::string(Utility::AnsiColor::fgcyan) + path + std::string(Utility::AnsiColor::reset_all);
+        path_lst.at(idx) = path;
       }
 
-      path_lst.at(idx) = path;
       ++idx;
     }
   } //scope

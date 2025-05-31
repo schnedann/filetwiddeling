@@ -192,16 +192,16 @@ int main(int argc, char* argv[]){
 
     //Informative File List
     if(information){
-
-      auto const permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
-
-      auto const what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
-
-      auto const file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
-
-      auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst);
-
       { //Formated output
+
+        auto const permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
+
+        auto const what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
+
+        auto const file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
+
+        auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst);
+
         size_t idx_width = 1 + std::log10(file_lst.size());
 
         size_t idx = 0;
@@ -217,10 +217,9 @@ int main(int argc, char* argv[]){
 
           ++idx;
         }
+
+        std::cout << file_lst.size() << " Entries found | acc. Size: " << file_size_lst.at(idx) << '\n';
       } //scope
-
-      std::cout << file_lst.size() << " Entries found" << '\n';
-
     //Basic File List
     }else{
       for(auto const& entry:file_lst){
