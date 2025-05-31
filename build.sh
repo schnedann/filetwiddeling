@@ -2,6 +2,8 @@
 
 clear
 
+start=$(date +%s)
+
 ####################################################
 # Load Script-Fu
 ####################################################
@@ -223,3 +225,6 @@ printf "$bold$green--> F I N I S H E D <--$reset\n"
 echo "$reset"
 
 pwd
+
+end=$(date +%s)
+echo "Execution time: $((end - start)) seconds"
