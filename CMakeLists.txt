@@ -56,6 +56,9 @@ endif()
 set(SOURCE_FILES
     src/main.cpp
     src/file_fkt.cpp
+    src/file_list_format.cpp
+    the_framework/enviroment/endianness_detect.cpp
+    the_framework/enviroment/standard_detect.cpp
 )
 
 # Add the executable
@@ -68,6 +71,8 @@ target_include_directories(filetwiddeling
   the_framework/enviroment
   the_framework/copyright
   the_framework/macros
+  the_framework/utility
+  the_framework/versioning
   external/cxxopts/include
   external/GSL/include
   PRIVATE src

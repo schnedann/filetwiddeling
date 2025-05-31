@@ -17,12 +17,14 @@ QMAKE_LFLAGS += -Wl,-Map=CountbitSet.map
 SOURCES += \
     $$PWD/src/main.cpp \
     $$PWD/src/file_fkt.cpp \
-    the_framework/enviroment/endianness_detect.cpp \
-    the_framework/enviroment/standard_detect.cpp
+    $$PWD/src/file_list_format.cpp \
+    $$PWD/the_framework/enviroment/endianness_detect.cpp \
+    $$PWD/the_framework/enviroment/standard_detect.cpp
 
 
 HEADERS += \
     $$PWD/inc/file_fkt.h \
+    $$PWD/src/file_list_format.h \
     $$PWD/inc/dtypes.h \
     $$PWD/inc/global_config.h \
     $$PWD/the_framework/enviroment/posix_detect.h \
@@ -38,7 +40,9 @@ HEADERS += \
     $$PWD/the_framework/copyright/modified_bsd.h \
     $$PWD/the_framework/macros/bitmacros.h \
     $$PWD/the_framework/macros/build_annotations.h \
-    $$PWD/the_framework/macros/needful_macros.h
+    $$PWD/the_framework/macros/needful_macros.h \
+    $$PWD/the_framework/utility/ansiconsolecolor.h \
+    $$PWD/the_framework/versioning/code_stamp.h
 
 
 INCLUDEPATH += \
@@ -46,6 +50,8 @@ INCLUDEPATH += \
     $$PWD/the_framework/enviroment \
     $$PWD/the_framework/copyright \
     $$PWD/the_framework/macros \
+    $$PWD/the_framework/utility \
+    $$PWD/the_framework/versioning \
     $$PWD/external/cxxopts/include \
     $$PWD/external/GSL/include
 

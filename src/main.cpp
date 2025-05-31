@@ -13,6 +13,8 @@
 
 #include "dtypes.h"
 #include "file_fkt.h"
+#include "file_list_format.h"
+#include "ansiconsolecolor.h"
 
 #include <cxxopts.hpp>
 
@@ -191,205 +193,26 @@ int main(int argc, char* argv[]){
     //Informative File List
     if(information){
 
-      size_t path_maxl = 0;
-      //longest path
-      for(auto const& entry:file_lst){
-        size_t tmp = entry.path().string().size();
-        if(path_maxl < tmp){
-          path_maxl = tmp;
-        }
-      }
+      auto const permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
 
-      auto str_extend = [](std::string& str, size_t target_length){
-        size_t pos = str.size();
-        str.resize(target_length);
-        for(;pos<target_length;++pos){
-          str.at(pos) = ' ';
-        }
-        return;
-      };
+      auto const what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
 
-      std::vector<std::string> permissions_lst(file_lst.size());
-      {
-        size_t idx = 0;
-        for(auto const& entry:file_lst){
+      auto const file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
 
-          if(!entry.is_directory() &&
-             !entry.is_socket() &&
-             !entry.is_symlink() &&
-             !entry.is_other()){
-            auto perms = std::filesystem::status(entry).permissions();
+      auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst);
 
-            auto perm2str = [](std::string& str, std::filesystem::perms const& pperms){
-              std::stringstream ss;
-              using std::filesystem::perms;
-              auto show = [&ss, &pperms](char op, perms perm)
-              {
-                ss << (perms::none == (perm & pperms) ? '-' : op);
-              };
-              show('r', perms::owner_read);
-              show('w', perms::owner_write);
-              show('x', perms::owner_exec);
-              show('r', perms::group_read);
-              show('w', perms::group_write);
-              show('x', perms::group_exec);
-              show('r', perms::others_read);
-              show('w', perms::others_write);
-              show('x', perms::others_exec);
-
-              str = ss.str();
-
-              return;
-            };
-
-            perm2str(permissions_lst.at(idx),perms);
-          }
-
-          ++idx;
-        }
-
-        //---
-
-        size_t maxl = 0;
-        for(auto const& str:permissions_lst){
-          size_t tmp = str.size();
-          if(maxl < tmp){
-            maxl = tmp;
-          }
-        }
-
-        //---
-
-        for(auto& str:permissions_lst){
-          str_extend(str,maxl);
-        }
-      }
-
-      std::vector<std::string> what_entry_lst(file_lst.size());
-      {
-        size_t idx = 0;
-        for(auto const& entry:file_lst){
-
-          if(entry.is_block_file()){
-            what_entry_lst.at(idx) = "BlockFile";
-          }
-          if(entry.is_character_file()){
-            what_entry_lst.at(idx) = "CharacterFile";
-          }
-          if(entry.is_regular_file()){
-            what_entry_lst.at(idx) = "File";
-          }
-
-          if(entry.is_directory()){
-            what_entry_lst.at(idx) = "Directory";
-          }
-          if(entry.is_fifo()){
-            what_entry_lst.at(idx) = "FiFo";
-          }
-          if(entry.is_socket()){
-            what_entry_lst.at(idx) = "Socket";
-          }
-
-          if(entry.is_symlink()){
-            what_entry_lst.at(idx) = "Symlink";
-          }
-          ++idx;
-        }
-
-        //---
-
-        size_t maxl = 0;
-        for(auto const& str:what_entry_lst){
-          size_t tmp = str.size();
-          if(maxl < tmp){
-            maxl = tmp;
-          }
-        }
-
-        //---
-
-        for(auto& str:what_entry_lst){
-          str_extend(str,maxl);
-        }
-      } //scope
-
-      std::vector<std::string> file_size_lst(file_lst.size());
-      {
-        size_t idx = 0;
-        for(auto const& entry:file_lst){
-
-          if(!entry.is_directory() &&
-             !entry.is_socket() &&
-             !entry.is_symlink() &&
-             !entry.is_other()){
-
-            auto fsize = entry.file_size();
-            size_t ii=0;
-            while(1024 <= fsize){
-              fsize /= 1024;
-              ++ii;
-            }
-            std::string file_size = std::to_string(fsize);
-            switch (ii) {
-            case 0:
-              file_size += " Byte";
-              break;
-            case 1:
-              file_size += " kB";
-              break;
-            case 2:
-              file_size += " MB";
-              break;
-            case 3:
-              file_size += " GB";
-              break;
-            case 4:
-              file_size += " TB";
-              break;
-            case 5:
-              file_size += " PB";
-              break;
-            default:
-              file_size = std::to_string(entry.file_size()) + " Byte";
-              break;
-            }
-
-            file_size_lst.at(idx) = file_size;
-          }
-
-          ++idx;
-        }
-
-        //---
-
-        size_t maxl = 0;
-        for(auto const& str:file_size_lst){
-          size_t tmp = str.size();
-          if(maxl < tmp){
-            maxl = tmp;
-          }
-        }
-
-        //---
-
-        for(auto& str:file_size_lst){
-          str_extend(str,maxl);
-        }
-      } //scope
-
-      {
+      { //Formated output
         size_t idx_width = 1 + std::log10(file_lst.size());
 
         size_t idx = 0;
         for(auto const& entry:file_lst){
-          auto path = entry.path().string();
-          str_extend(path,path_maxl);
           std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
-          std::cout << "[" << std::setw(idx_width) << idx << "]  " << path << "| "
-                    << file_size_lst.at(idx) << "| "
-                    << what_entry_lst.at(idx) << "| "
-                    << permissions_lst.at(idx) << "| "
-                    << std::format("{}", ftime)
+          std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
+                    << path_lst.at(idx) << "  "
+                    << file_size_lst.at(idx) << "  "
+                    << what_entry_lst.at(idx) << "  "
+                    << permissions_lst.at(idx) << "  "
+                    << Utility::AnsiColor::fghighblue << std::format("{}", ftime) << Utility::AnsiColor::reset_all
                     << '\n';
 
           ++idx;
