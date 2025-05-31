@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <array>
 
 //--------------------------------------------------
 
@@ -22,20 +23,20 @@ using s64 = int64_t;
 //--------------------------------------------------
 
 typedef union cutype16_u{
-  u8  a[2];
+  std::array<u8,2> a;
   u16 b;
 }cutype16_t;
 
 typedef union cutype32_u{
-  u8  a[4];
-  u16 b[2];
+  std::array<u8,4>  a;
+  std::array<u16,2> b;
   u32 c;
 }cutype32_t;
 
 typedef union cutype64_u{
-  u8  a[8];
-  u16 b[4];
-  u32 c[2];
+  std::array<u8,8>  a;
+  std::array<u16,4> b;
+  std::array<u32,2> c;
   u64 d;
 }cutype64_t;
 

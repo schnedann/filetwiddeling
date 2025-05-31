@@ -33,7 +33,7 @@
 
 #define mgetbitsoftype(pT) (sizeof(pT)<<3)
 #define mgetmaskbit(pbit,pT) (pT(1)<<(pbit))
-#define mgetfullmask(pbits,pT) ((((mgetmaskbit((pbits-1),pT))-1)<<1)|1)
+#define mgetfullmask(pbits,pT) ((((mgetmaskbit(((pbits)-1),pT))-1)<<1)|1)
 
 #define mINVERT(px)     (~(px))
 #define maINVERT(px)    ((px)~=(px))

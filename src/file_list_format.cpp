@@ -11,7 +11,7 @@
 
 namespace {
 
-auto str_extend = [](std::string& str, size_t target_length){
+auto const str_extend = [](std::string& str, size_t target_length){
   size_t pos = str.size();
   str.resize(target_length);
   for(;pos<target_length;++pos){
@@ -159,8 +159,9 @@ std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::d
 
         auto fsize = entry.file_size();
         size_t ii=0;
-        while(1024 <= fsize){
-          fsize /= 1024;
+        static constexpr size_t const onekB = 1024;
+        while(onekB <= fsize){
+          fsize /= onekB;
           ++ii;
         }
         std::string file_size = std::to_string(fsize);
