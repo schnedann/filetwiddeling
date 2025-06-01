@@ -24,7 +24,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/inc/file_fkt.h \
-    $$PWD/src/file_list_format.h \
+    $$PWD/inc/file_list_format.h \
     $$PWD/inc/dtypes.h \
     $$PWD/inc/global_config.h \
     $$PWD/the_framework/enviroment/posix_detect.h \

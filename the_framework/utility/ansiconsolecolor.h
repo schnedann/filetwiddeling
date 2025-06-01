@@ -7,38 +7,53 @@ namespace Utility {
 
 namespace AnsiColor {
 
-static auto const reset_all = std::string_view("\033[0m");
 //clears all colors and styles (to white on black)
+static auto const reset_all = std::string_view("\033[0m");
 
-static auto const bold_on = std::string_view("\033[1m");
+//---
+
 //bold on
-
-static auto const italic_on = std::string_view("\033[3m");
-//italics on
-
-static auto const underline_on = std::string_view("\033[4m");
-//underline on
-
-static auto const inverse_on = std::string_view("\033[7m");
-//inverse on - reverses foreground & background colors
-
-static auto const strikethrough_on = std::string_view("\033[9m");
-//strikethrough on
-
-static auto const bold_off = std::string_view("\033[22m");
+static auto const bold_on = std::string_view("\033[1m");
 //bold off
+static auto const bold_off = std::string_view("\033[22m");
 
-static auto const italic_off = std::string_view("\033[23m");
+
+//italics on
+static auto const italic_on = std::string_view("\033[3m");
 //italics off
+static auto const italic_off = std::string_view("\033[23m");
 
-static auto const underline_off = std::string_view("\033[24m");
+
+//underline on
+static auto const underline_on = std::string_view("\033[4m");
 //underline off
+static auto const underline_off = std::string_view("\033[24m");
 
-static auto const inverse_off = std::string_view("\033[27m");
+
+//slow Blink
+static auto const slowblink_on = std::string_view("\033[5m");
+//slow Blink off
+static auto const slowblink_off = std::string_view("\033[25m");
+
+
+//fast Blink
+static auto const fatblink_on = std::string_view("\033[6m");
+//fast Blink off
+static auto const fastblink_off = std::string_view("\033[25m");
+
+
+//inverse on - reverses foreground & background colors
+static auto const inverse_on = std::string_view("\033[7m");
 //inverse off
+static auto const inverse_off = std::string_view("\033[27m");
 
+
+//strikethrough on
+static auto const strikethrough_on = std::string_view("\033[9m");
+//strikethrough off
 static auto const strikethrough_off = std::string_view("\033[29m");
-//strikethrough offf
+
+//---
 
 static auto const fgblack = std::string_view("\033[30m");
 //set foreground color to black

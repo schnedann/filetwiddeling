@@ -1,5 +1,6 @@
 #include "file_list_format.h"
 
+#include <filesystem>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -8,6 +9,28 @@
 #include "dtypes.h"
 #include "file_fkt.h"
 #include "ansiconsolecolor.h"
+#include "enviroment_detection.h"
+
+//-----
+
+#define USE_FILESYSTEM 0
+#if (0<dIS_MINGW)
+#include <boost/filesystem.hpp>
+#include <boost/system.hpp>
+namespace fs=boost::filesystem;
+namespace sys = boost::system;
+#undef  USE_FILESYSTEM
+#define USE_FILESYSTEM 1
+#else
+#include <filesystem>
+#include <system_error>
+namespace fs=std::filesystem;
+namespace sys=std;
+#undef  USE_FILESYSTEM
+#define USE_FILESYSTEM 1
+#endif
+
+//-----
 
 namespace {
 
@@ -96,35 +119,61 @@ std::vector<std::string> File_Fkt::List_Format::get_permissions_lst(std::set<fs:
 }
 
 std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::directory_entry> const& list){
-  std::vector<std::string> what_entry_lst(list.size());
+
+  static constexpr std::string_view const blau63    = "\033[38;5;63m";
+  static constexpr std::string_view const orange202 = "\033[38;5;202m";
+
+  static constexpr std::array<std::string_view,7> const Texts = {
+    "BlockFile",
+    "CharacterFile",
+    "File",
+    "Directory",
+    "FiFo",
+    "Socket",
+    "Symlink"
+  };
+
+  //---
+
+  size_t all_maxl = 0;
+  for(auto const& str:Texts){
+    size_t tmp = str.size();
+    if(all_maxl < tmp){
+      all_maxl = tmp;
+    }
+  }
+
+  std::vector<std::string> what_entry_lst(list.size(),std::string(all_maxl+2*blau63.size(),' '));
   {
-    size_t idx = 0;
-    for(auto const& entry:list){
+    {
+      size_t idx = 0;
+      for(auto const& entry:list){
 
-      if(entry.is_block_file()){
-        what_entry_lst.at(idx) = "BlockFile";
-      }
-      if(entry.is_character_file()){
-        what_entry_lst.at(idx) = "CharacterFile";
-      }
-      if(entry.is_regular_file()){
-        what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fghighred) + "File" + std::string(Utility::AnsiColor::reset_all);
-      }
+        if(entry.is_block_file()){
+          what_entry_lst.at(idx) = std::string(Texts.at(0));
+        }
+        if(entry.is_character_file()){
+          what_entry_lst.at(idx) = std::string(Texts.at(1));
+        }
+        if(entry.is_regular_file()){
+          what_entry_lst.at(idx) = std::string(Texts.at(2));
+        }
 
-      if(entry.is_directory()){
-        what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fgcyan) + "Directory" + std::string(Utility::AnsiColor::reset_all);
-      }
-      if(entry.is_fifo()){
-        what_entry_lst.at(idx) = "FiFo";
-      }
-      if(entry.is_socket()){
-        what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fghighyellow) + "Socket" + std::string(Utility::AnsiColor::reset_all);
-      }
+        if(entry.is_directory()){
+          what_entry_lst.at(idx) = std::string(Texts.at(3));
+        }
+        if(entry.is_fifo()){
+          what_entry_lst.at(idx) = std::string(Texts.at(4));
+        }
+        if(entry.is_socket()){
+          what_entry_lst.at(idx) = std::string(Texts.at(5));
+        }
 
-      if(entry.is_symlink()){
-        what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fgmagenta) + "Symlink" + std::string(Utility::AnsiColor::reset_all) ;
+        if(entry.is_symlink()){
+          what_entry_lst.at(idx) = std::string(Texts.at(6));
+        }
+        ++idx;
       }
-      ++idx;
     }
 
     //---
@@ -142,6 +191,40 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
     for(auto& str:what_entry_lst){
       str_extend(str,maxl);
     }
+
+    //---
+
+    {
+      size_t idx = 0;
+      for(auto const& entry:list){
+
+        /*if(entry.is_block_file()){
+          what_entry_lst.at(idx) = std::string(Texts.at(0));
+        }*/
+        /*if(entry.is_character_file()){
+          what_entry_lst.at(idx) = std::string(Texts.at(1));
+        }*/
+        if(entry.is_regular_file()){
+          what_entry_lst.at(idx) = std::string(blau63) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+        }
+
+        if(entry.is_directory()){
+          what_entry_lst.at(idx) = std::string(orange202) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+        }
+        if(entry.is_fifo()){
+          what_entry_lst.at(idx) = std::string(Texts.at(4));
+        }
+        if(entry.is_socket()){
+          what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fghighyellow) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+        }
+
+        if(entry.is_symlink()){
+          what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fgmagenta) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all) ;
+        }
+        ++idx;
+      }
+    }
+
   } //scope
   return what_entry_lst;
 }
@@ -247,11 +330,11 @@ std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::direct
 
       if(!entry.is_directory()){
         str_extend(file,path_maxl);
-        file = std::string(Utility::AnsiColor::fgwhite) + std::string(Utility::AnsiColor::bold_on) + file + std::string(Utility::AnsiColor::reset_all);
+        file = std::string("\033[38;5;111m") + std::string(Utility::AnsiColor::bold_on) + file + std::string(Utility::AnsiColor::reset_all);
         path_lst.at(idx) = file;
       }else{
         str_extend(path,path_maxl);
-        path = std::string(Utility::AnsiColor::fgcyan) + path + std::string(Utility::AnsiColor::reset_all);
+        path = std::string("\033[38;5;148m") + path + std::string(Utility::AnsiColor::reset_all);
         path_lst.at(idx) = path;
       }
 
