@@ -15,6 +15,7 @@
 #include "file_fkt.h"
 #include "file_list_format.h"
 #include "ansiconsolecolor.h"
+#include "terminal.h"
 
 #include <cxxopts.hpp>
 
@@ -130,6 +131,10 @@ int main(int argc, char* argv[]){
 
   switch (mmode) {
   case main_mode_e::list_dir:{
+
+    auto const twidth = Terminal::size().first;
+    auto const maxpath = twidth >> 1;
+
     std::cout << "List Directory" << "\n";
     fs::path fs_target = fs::current_path();
     if(!target.empty()){
@@ -200,7 +205,7 @@ int main(int argc, char* argv[]){
 
         auto const file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
 
-        auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst);
+        auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst,maxpath);
 
         size_t idx_width = 1 + std::log10(file_lst.size());
 
@@ -208,10 +213,10 @@ int main(int argc, char* argv[]){
         for(auto const& entry:file_lst){
           std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
           std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
-                    << path_lst.at(idx) << "  "
-                    << file_size_lst.at(idx) << "  "
-                    << what_entry_lst.at(idx) << "  "
-                    << permissions_lst.at(idx) << "  "
+                    << path_lst.at(idx) << " | "
+                    << file_size_lst.at(idx) << " | "
+                    << what_entry_lst.at(idx) << " | "
+                    << permissions_lst.at(idx) << " | "
                     << Utility::AnsiColor::fghighblue << std::format("{}", ftime) << Utility::AnsiColor::reset_all
                     << '\n';
 

@@ -18,7 +18,7 @@ std::vector<std::string> get_what_entry_lst(std::set<fs::directory_entry> const&
 
 std::vector<std::string> get_file_size_lst(std::set<fs::directory_entry> const& list);
 
-std::vector<std::string> get_path_lst(std::set<fs::directory_entry> const& list);
+std::vector<std::string> get_path_lst(std::set<fs::directory_entry> const& list, size_t const maxpath);
 
 } //namespace
 

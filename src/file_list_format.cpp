@@ -11,6 +11,8 @@
 #include "ansiconsolecolor.h"
 #include "enviroment_detection.h"
 
+#include "terminal.h"
+
 //-----
 
 #define USE_FILESYSTEM 0
@@ -319,27 +321,67 @@ std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::d
   return file_size_lst;
 }
 
-std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::directory_entry> const& list){
-  auto const path_maxl = 4 + File_Fkt::List_Format::get_max_path_length(list);
+std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::directory_entry> const& list, size_t const maxpath){
   std::vector<std::string> path_lst(list.size());
   {
-    size_t idx = 0;
-    for(auto const& entry:list){
-      auto path = entry.path().string();
-      auto file = std::string("    ") + entry.path().filename().string();
+    {
+      size_t idx = 0;
+      for(auto const& entry:list){
 
-      if(!entry.is_directory()){
-        str_extend(file,path_maxl);
-        file = std::string("\033[38;5;111m") + std::string(Utility::AnsiColor::bold_on) + file + std::string(Utility::AnsiColor::reset_all);
-        path_lst.at(idx) = file;
-      }else{
-        str_extend(path,path_maxl);
-        path = std::string("\033[38;5;148m") + path + std::string(Utility::AnsiColor::reset_all);
-        path_lst.at(idx) = path;
+        if(!entry.is_directory()){
+
+          auto file = entry.path().filename().string();
+          if(maxpath < file.size()){
+            size_t const len = (maxpath-4);
+            size_t const pos = (file.size()-len);
+            file = std::string("...") + file.substr(pos,len);
+          }
+          file = std::string("    ") + file; //indent
+          path_lst.at(idx) = file;
+        }else{
+
+          auto path = entry.path().string();
+          if(maxpath < path.size()){
+            path = std::string("...") + path.substr((path.size()-maxpath),maxpath);
+          }
+          path_lst.at(idx) = path;
+        }
+
+        ++idx;
       }
+    } //scope
 
-      ++idx;
+    //---
+
+    size_t maxl = 0;
+    for(auto const& str:path_lst){
+      size_t tmp = str.size();
+      if(maxl < tmp){
+        maxl = tmp;
+      }
     }
+
+    //---
+
+    for(auto& str:path_lst){
+      str_extend(str,maxl);
+    }
+
+    //---
+
+    {
+      size_t idx = 0;
+      for(auto const& entry:list){
+        if(!entry.is_directory()){
+          path_lst.at(idx) = std::string("\033[38;5;111m") + std::string(Utility::AnsiColor::bold_on) + path_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+        }else{
+          path_lst.at(idx) = std::string("\033[38;5;148m") + path_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+        }
+
+        ++idx;
+      }
+    } //scope
+
   } //scope
   return path_lst;
 }

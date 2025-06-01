@@ -59,6 +59,7 @@ set(SOURCE_FILES
     src/file_list_format.cpp
     the_framework/enviroment/endianness_detect.cpp
     the_framework/enviroment/standard_detect.cpp
+    the_framework/utility/terminal.cpp
 )
 
 # Add the executable

@@ -19,7 +19,8 @@ SOURCES += \
     $$PWD/src/file_fkt.cpp \
     $$PWD/src/file_list_format.cpp \
     $$PWD/the_framework/enviroment/endianness_detect.cpp \
-    $$PWD/the_framework/enviroment/standard_detect.cpp
+    $$PWD/the_framework/enviroment/standard_detect.cpp \
+    the_framework/utility/terminal.cpp
 
 
 HEADERS += \
@@ -42,7 +43,9 @@ HEADERS += \
     $$PWD/the_framework/macros/build_annotations.h \
     $$PWD/the_framework/macros/needful_macros.h \
     $$PWD/the_framework/utility/ansiconsolecolor.h \
+    $$PWD/the_framework/utility/terminal.h \
     $$PWD/the_framework/versioning/code_stamp.h
+
 
 
 INCLUDEPATH += \
