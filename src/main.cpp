@@ -10,6 +10,7 @@
 #include <cmath>
 #include <format>
 #include <chrono>
+#include <thread>
 
 #include "dtypes.h"
 #include "file_fkt.h"
@@ -199,13 +200,46 @@ int main(int argc, char* argv[]){
     if(information){
       { //Formated output
 
-        auto const permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
+        std::vector<std::thread> threads;
 
-        auto const what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
+        using str_lst_T = std::vector<std::string>;
 
-        auto const file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
+        str_lst_T permissions_lst;
+        {
+          auto const pm_fct = [&file_lst,&permissions_lst](){
+            permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
+          };
+          threads.emplace_back(pm_fct);
+        }
 
-        auto const path_lst = File_Fkt::List_Format::get_path_lst(file_lst,maxpath);
+        str_lst_T what_entry_lst;
+        {
+          auto const we_fct = [&file_lst,&what_entry_lst](){
+            what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
+          };
+          threads.emplace_back(we_fct);
+        }
+
+        str_lst_T file_size_lst;
+        {
+          auto const fs_fct = [&file_lst,&file_size_lst](){
+            file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
+          };
+          threads.emplace_back(fs_fct);
+        }
+
+        str_lst_T path_lst;
+        {
+          auto const pl_fct = [&file_lst,&path_lst,maxpath](){
+            path_lst = File_Fkt::List_Format::get_path_lst(file_lst,maxpath);
+          };
+          threads.emplace_back(pl_fct);
+        }
+
+        // Join all threads
+        for (auto& t : threads) {
+          t.join();
+        }
 
         size_t idx_width = 1 + std::log10(file_lst.size());
 
