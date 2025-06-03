@@ -21,6 +21,8 @@ SOURCES += \
     $$PWD/src/file_list_format.cpp \
     $$PWD/the_framework/enviroment/endianness_detect.cpp \
     $$PWD/the_framework/enviroment/standard_detect.cpp \
+    $$PWD/the_framework/math/math_division.cpp \
+    $$PWD/the_framework/strings/Stringhelper.cpp \
     $$PWD/the_framework/utility/terminal.cpp
 
 
@@ -30,6 +32,14 @@ HEADERS += \
     $$PWD/inc/file_list_format.h \
     $$PWD/inc/dtypes.h \
     $$PWD/inc/global_config.h \
+    $$PWD/the_framework/core/compile_guards.h \
+    $$PWD/the_framework/core/bit_func.h \
+    $$PWD/the_framework/core/dtypes.h \
+    $$PWD/the_framework/core/fields.h \
+    $$PWD/the_framework/core/meta.h \
+    $$PWD/the_framework/core/Iterators/iterator_base_api.h \
+    $$PWD/the_framework/core/Iterators/iterator_ptr_wrapper.h \
+    $$PWD/the_framework/core/Iterators/iterator_unaligned_data.h \
     $$PWD/the_framework/enviroment/posix_detect.h \
     $$PWD/the_framework/enviroment/architecture_detect.h \
     $$PWD/the_framework/enviroment/compiler_detect.h \
@@ -44,16 +54,21 @@ HEADERS += \
     $$PWD/the_framework/macros/bitmacros.h \
     $$PWD/the_framework/macros/build_annotations.h \
     $$PWD/the_framework/macros/needful_macros.h \
+    $$PWD/the_framework/math/math_division.h \
+    $$PWD/the_framework/strings/Stringhelper.h \
     $$PWD/the_framework/utility/ansiconsolecolor.h \
     $$PWD/the_framework/utility/terminal.h \
     $$PWD/the_framework/versioning/code_stamp.h
 
-
 INCLUDEPATH += \
     $$PWD/inc \
+    $$PWD/the_framework/core \
+    $$PWD/the_framework/core/Iterators \
     $$PWD/the_framework/enviroment \
     $$PWD/the_framework/copyright \
     $$PWD/the_framework/macros \
+    $$PWD/the_framework/math \
+    $$PWD/the_framework/strings \
     $$PWD/the_framework/utility \
     $$PWD/the_framework/versioning \
     $$PWD/external/cxxopts/include \
