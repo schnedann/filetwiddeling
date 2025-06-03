@@ -54,6 +54,7 @@ endif()
 
 # Define a list of source files
 set(SOURCE_FILES
+    src/evaluate_args.cpp
     src/main.cpp
     src/file_fkt.cpp
     src/file_list_format.cpp

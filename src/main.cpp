@@ -15,6 +15,8 @@
 #include "dtypes.h"
 #include "file_fkt.h"
 #include "file_list_format.h"
+#include "evaluate_args.h"
+
 #include "ansiconsolecolor.h"
 #include "terminal.h"
 
@@ -139,39 +141,17 @@ int main(int argc, char* argv[]){
     std::cout << "List Directory" << "\n";
     fs::path fs_target = fs::current_path();
     if(!target.empty()){
-      auto const tmp = fs::path(target);
+      fs_target = fs::path(target);
 
-      if(tmp.has_extension()){
-        std::cerr << "Target is a Filename" << "\n";
-        std::cerr << tmp << "\n";
-        exit(EXIT_FAILURE);
-      }
+      EvalArgs::is_directory_n_exists(fs_target);
 
-      if(!fs::exists(tmp)){
-        std::cerr << "Target does not exist in filesystem" << "\n";
-        std::cerr << tmp << "\n";
-        exit(EXIT_FAILURE);
-      }
-
-      fs_target = tmp;
     }else{
       if(0<uro.size()){
         std::cout << "testing first unrecognized argument as target" << "\n";
-        auto const tmp = fs::path(uro.at(0));
+        fs_target = fs::path(uro.at(0));
 
-        if(tmp.has_extension()){
-          std::cerr << "Target is a Filename" << "\n";
-          std::cerr << tmp << "\n";
-          exit(EXIT_FAILURE);
-        }
+        EvalArgs::is_directory_n_exists(fs_target);
 
-        if(!fs::exists(tmp)){
-          std::cerr << "Target does not exist in filesystem" << "\n";
-          std::cerr << tmp << "\n";
-          exit(EXIT_FAILURE);
-        }
-
-        fs_target = tmp;
       }
     }
     std::cout << "Target: " << fs_target << "\n";

@@ -15,15 +15,17 @@ QMAKE_LFLAGS_RELEASE += -Wl,-z,now -Wl,-z,relro
 QMAKE_LFLAGS += -Wl,-Map=CountbitSet.map
 
 SOURCES += \
+    $$PWD/src/evaluate_args.cpp \
     $$PWD/src/main.cpp \
     $$PWD/src/file_fkt.cpp \
     $$PWD/src/file_list_format.cpp \
     $$PWD/the_framework/enviroment/endianness_detect.cpp \
     $$PWD/the_framework/enviroment/standard_detect.cpp \
-    the_framework/utility/terminal.cpp
+    $$PWD/the_framework/utility/terminal.cpp
 
 
 HEADERS += \
+    $$PWD/src/evaluate_args.h \
     $$PWD/inc/file_fkt.h \
     $$PWD/inc/file_list_format.h \
     $$PWD/inc/dtypes.h \
@@ -45,7 +47,6 @@ HEADERS += \
     $$PWD/the_framework/utility/ansiconsolecolor.h \
     $$PWD/the_framework/utility/terminal.h \
     $$PWD/the_framework/versioning/code_stamp.h
-
 
 
 INCLUDEPATH += \
