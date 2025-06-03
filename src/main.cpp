@@ -11,6 +11,7 @@
 #include <format>
 #include <chrono>
 #include <thread>
+#include <span>
 
 #include "dtypes.h"
 #include "file_fkt.h"
@@ -26,7 +27,7 @@ using namespace std;
 
 int main(int argc, char* argv[]){
 
-  std::cout << __DATE__ << "T" << __TIME__ << "\n";
+  //std::cout << __DATE__ << "T" << __TIME__ << "\n";
 
   //---
 
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]){
   {
 
     options.add_options()
-      ("ls,list_dir","List Directory", cxxopts::value<bool>()->default_value("false"))
+      ("ls,list_dir","List Directory - plain list or add -i to get a nice colored and formated output", cxxopts::value<bool>()->default_value("false"))
       ("playground", "Test Code", cxxopts::value<bool>()) // a bool parameter
       ("cp,copy","copy File or Directory", cxxopts::value<bool>()->default_value("false"))
       ("i,information","decorate output with information", cxxopts::value<bool>()->default_value("false"))
@@ -231,7 +232,7 @@ int main(int argc, char* argv[]){
                     << file_size_lst.at(idx) << " | "
                     << what_entry_lst.at(idx) << " | "
                     << permissions_lst.at(idx) << " | "
-                    << Utility::AnsiColor::fghighblue << std::format("{}", ftime) << Utility::AnsiColor::reset_all
+                    << Utility::AnsiColor::fghighblue << std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21) << Utility::AnsiColor::reset_all
                     << '\n';
 
           ++idx;
@@ -280,6 +281,15 @@ int main(int argc, char* argv[]){
     break;
   }
   default:
+
+    std::cout << "Welcome to the Filetwiddleing Tool" << "\n";
+
+    size_t idx=0;
+    auto const argspan = std::span(argv,argc);
+    for(auto cstr:argspan){
+      std::cout << "[" << idx << "]: " << cstr << "\n";
+    }
+
     std::cout << options.help() << std::endl;
     exit(EXIT_SUCCESS);
     break;
