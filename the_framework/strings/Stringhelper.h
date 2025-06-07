@@ -2,21 +2,22 @@
 #define Stringhelper_H
 
 #include <string>
+#include <span>
 
 #include "standard_detect.h"
 
-#if dUSE_STDCPP_17
+#if dIS_LEAST_CXX17
   #include <string_view>
   using string_nc = std::string_view;
 #else
   using string_nc = std::string;
 #endif
+
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include <type_traits>
-#include <typeinfo>
-#include <cxxabi.h>
+
 #include <bitset>
 
 //for Copyright see this file
@@ -31,11 +32,13 @@
 #include "iterator_ptr_wrapper.h"
 #include "meta.h"
 
-namespace Utility{
-
-namespace Strings{
+namespace Utility::Strings{
 
 #if (0 == dUSE_STD_NO_RTTI)
+
+#include <typeinfo>
+#include <cxxabi.h>
+
 /**
  * @brief get_type_as_str
  * @return
@@ -66,37 +69,45 @@ template<class T> std::string get_type_as_str(){
  **************************************************/
 
 /**
- * @brief X_2hexstr - Convert unsigned Number _x to HexString
+ * @brief X_2hexstr - Convert unsigned Number px to HexString
  * @param px
  * @return
  */
 template<class T> std::string X_2hexstr(T const px){
   Compile::Guards::IsUnsigned<T>();
-  return static_cast<std::ostringstream*>( &(std::ostringstream() << std::hex << "0x" << static_cast<Meta::Types::replace8bitint_t<T>>(px)) )->str();
+  return static_cast<std::ostringstream*>( &(std::ostringstream() <<
+                                            std::hex << "0x" <<
+                                            static_cast<Meta::Types::replace8bitint_t<T>>(px)) )->str();
 }
 
 //-----
 
 /**
- * @brief X_2str - Convert Number _x to String in Field with Width w and fillchar f
+ * @brief X_2str - Convert Number px to String in Field with Width w and fillchar f
  * @param px
  * @param width
  * @param fill
  * @return
  */
-template<class T, typename = std::enable_if_t<!std::is_same<bool,T>::value>> std::string X_2str(T const px, int const width=0, char const fill=' '){
+template<class T, typename = std::enable_if_t<!std::is_same<bool,T>::value>>
+std::string X_2str(T const px,
+                   int const width=0,
+                   char const fill=' '){
   //Compile::Guards::isArithmetic<T>();
-  return static_cast<std::ostringstream*>( &(std::ostringstream() << std::setw(width) << std::setfill(fill) << static_cast<Meta::Types::replace8bitint_t<T>>(px)) )->str();
+  return static_cast<std::ostringstream*>( &(std::ostringstream() <<
+                                            std::setw(width) <<
+                                            std::setfill(fill) <<
+                                            static_cast<Meta::Types::replace8bitint_t<T>>(px)) )->str();
 }
-
-
 
 //-----
 
 /**
  * @brief str2_X - Convert String to type T
+ * @param str
+ * @return
  */
-template<class T> T str2_X(string_nc& str){
+template<class T> T str2_X(std::string& str){
   T res;
   std::istringstream(str)>>res;
   return res;
@@ -152,7 +163,8 @@ template<class T> T str2unum(string_nc const& str, conmode_t const dechex){
 /**
  * Convert String to Number - decimal or hexadecimal
  */
-template<class T> T str2num(std::string const& str, conmode_t const dechex){
+template<class T> T str2num(string_nc const& str, conmode_t const dechex){
+  Compile::Guards::IsMathType<T>();
   T num;
   std::stringstream ss;
 
@@ -172,13 +184,13 @@ template<class T> T str2num(std::string const& str, conmode_t const dechex){
 
 /**
  * @brief unum2bin
- * @param x
+ * @param px
  * @return
  */
-template<typename T> std::string unum2bin(T const x){
+template<typename T> std::string unum2bin(T const px){
   Compile::Guards::IsUnsigned<T>();
   std::stringstream ss;
-  ss << std::bitset<Math::Boolean::getbitsoftype<T>()>{x};
+  ss << std::bitset<Math::Boolean::getbitsoftype<T>()>{px};
   return ss.str();
 }
 
@@ -188,7 +200,8 @@ template<typename T> std::string unum2bin(T const x){
  * @param bits
  * @return
  */
-template<typename T> std::string num2bin(T const x, u8 const bits=Math::Boolean::getbitsoftype<T>()){
+template<typename T> std::string num2bin(T const x,
+                    u8 const bits=Math::Boolean::getbitsoftype<T>()){
   Compile::Guards::IsInteger<T>();
 
   using TT = typename std::remove_cv<T>::type;
@@ -292,8 +305,6 @@ template<typename T> std::string to_string(T const px){
 #define PRNVAR(_X) (Utility::Strings::to_string<decltype(_X)>((#_X),(_X)))
 // plus type-info
 #define PRNVAR_EX(_X) (Utility::Strings::to_string<decltype(_X)>(Utility::Strings::stradd<3>({Utility::Strings::get_type_as_str<decltype(_X)>()," ",(#_X)}),(_X)))
-
-
 
 //-----
 
@@ -429,14 +440,8 @@ std::string fill(string_nc const& str, string_nc const& fstr, size_t const len);
   * @param arr
   * @return
   */
-template<size_t N> std::string stradd(std::array<std::string,N> const& arr){
-  std::stringstream ss;
-
-  for(auto const& str:arr){
-    ss << str;
-  }
-  return ss.str();
-}
+//template<size_t N> std::string stradd(std::array<string_nc,N> const arr){
+std::string stradd(std::span<std::string_view> const arr);
 
 //--------------------------------------------------
 
@@ -480,9 +485,5 @@ template<typename T> std::string print_array_Line(T data[], size_t size, size_t 
 //--------------------------------------------------
 
 } //namespace
-
-} //namespace
-
-namespace stdext = Utility::Strings;
 
 #endif // Stringhelper_H

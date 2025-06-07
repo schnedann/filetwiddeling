@@ -2,10 +2,11 @@
 #define ANSICONSOLECOLOR_H
 
 #include <string>
+#include <string_view>
 
-namespace Utility {
+#include "dtypes.h"
 
-namespace AnsiColor {
+namespace Utility::AnsiColor {
 
 //clears all colors and styles (to white on black)
 static auto const reset_all = std::string_view("\033[0m");
@@ -93,8 +94,6 @@ static auto const fgwhite      = std::string_view("\033[97m");
 
 //--------------------------------------------------
 
-
-
 static auto const bgblack = std::string_view("\033[40m");
 //set background color to black
 
@@ -122,7 +121,41 @@ static auto const bgwhite = std::string_view("\033[47m");
 static auto const bgdefault = std::string_view("\033[49m");
 //set background color to default (white)
 
-} //namespace
+//--------------------------------------------------
+
+enum class colorsel_e:u8{
+  reset = 0,
+  black,
+  red,
+  green,
+  yellow,
+  blue,
+  magenta,
+  cyan,
+  high_grey,
+  grey,
+  high_red,
+  high_green,
+  high_yellow,
+  high_blue,
+  pink,
+  high_cyan,
+  white
+};
+using colorsel_T = enum colorsel_e;
+
+enum class modify_e:u8{
+  none = 0,
+  bold,
+  italic,
+  underline,
+  slow_blink,
+  fast_blink,
+  inverse
+};
+using modify_e_T = enum modify_e;
+
+std::string colorize(std::string_view const sv, colorsel_T const csel, modify_e const msel=modify_e::none);
 
 } //namespace
 

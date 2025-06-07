@@ -17,7 +17,7 @@
 #include "file_fkt.h"
 #include "file_list_format.h"
 #include "evaluate_args.h"
-
+#include "Stringhelper.h"
 #include "ansiconsolecolor.h"
 #include "terminal.h"
 
@@ -181,6 +181,8 @@ int main(int argc, char* argv[]){
     if(information){
       { //Formated output
 
+        auto const line = Utility::Strings::Smply("─",twidth);
+
         std::vector<std::thread> threads;
 
         using str_lst_T = std::vector<std::string>;
@@ -226,13 +228,19 @@ int main(int argc, char* argv[]){
 
         size_t idx = 0;
         for(auto const& entry:file_lst){
+
+          if(entry.is_directory()){
+            std::cout << line << '\n';
+          }
+
+
           std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
           std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
                     << path_lst.at(idx) << " | "
                     << file_size_lst.at(idx) << " | "
                     << what_entry_lst.at(idx) << " | "
                     << permissions_lst.at(idx) << " | "
-                    << Utility::AnsiColor::fghighblue << std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21) << Utility::AnsiColor::reset_all
+                    << Utility::AnsiColor::colorize(std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21),Utility::AnsiColor::colorsel_e::high_blue)
                     << '\n';
 
           ++idx;

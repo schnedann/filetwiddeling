@@ -217,11 +217,11 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
           what_entry_lst.at(idx) = std::string(Texts.at(4));
         }
         if(entry.is_socket()){
-          what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fghighyellow) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+          what_entry_lst.at(idx) = Utility::AnsiColor::colorize(what_entry_lst.at(idx),Utility::AnsiColor::colorsel_e::high_yellow);
         }
 
         if(entry.is_symlink()){
-          what_entry_lst.at(idx) = std::string(Utility::AnsiColor::fgmagenta) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all) ;
+          what_entry_lst.at(idx) = Utility::AnsiColor::colorize(what_entry_lst.at(idx),Utility::AnsiColor::colorsel_e::magenta) ;
         }
         ++idx;
       }
@@ -314,7 +314,7 @@ std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::d
     //---
 
     for(auto& str:file_size_lst){
-      str = std::string(Utility::AnsiColor::fghighgreen )+ str + std::string(Utility::AnsiColor::reset_all);
+      str = Utility::AnsiColor::colorize(str,Utility::AnsiColor::colorsel_e::high_green);
     }
 
   } //scope

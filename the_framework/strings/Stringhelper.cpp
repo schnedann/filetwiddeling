@@ -1,6 +1,14 @@
 //for Copyright see this file
 #include "modified_bsd.h"
 
+#include <string>
+
+#include "standard_detect.h"
+
+#if dIS_LEAST_CXX17
+  #include <string_view>
+#endif
+
 #include <algorithm>
 
 #include "Stringhelper.h"
@@ -132,7 +140,7 @@ string Utility::Strings::fill(string_nc const& str, string_nc const& fstr, size_
 /**
  *
  */
-std::string& Utility::Strings::toupper(string& str){
+std::string& Utility::Strings::toupper(std::string& str){
   std::transform(str.begin(), str.end(), str.begin(), ::toupper);
   return str;
 }
@@ -140,19 +148,19 @@ std::string& Utility::Strings::toupper(string& str){
 /**
  *
  */
-std::string& Utility::Strings::tolower(string& str){
+std::string& Utility::Strings::tolower(std::string& str){
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
   return str;
 }
 
-string Utility::Strings::toupper_cpy(string_nc const& str){
-  auto strcpy = str;
+std::string Utility::Strings::toupper_cpy(string_nc const& str){
+  auto strcpy = std::string(str);
   static_cast<void>(toupper(strcpy));
   return strcpy;
 }
 
-string Utility::Strings::tolower_cpy(string_nc const& str){
-  auto strcpy = str;
+std::string Utility::Strings::tolower_cpy(string_nc const& str){
+  auto strcpy = std::string(str);
   static_cast<void>(tolower(strcpy));
   return strcpy;
 }
@@ -193,3 +201,11 @@ std::string& Utility::Strings::trim(std::string& str){
 }
 
 //--------------------------------------------------
+
+std::string Utility::Strings::stradd(std::span<std::string_view> const arr){
+  std::stringstream ss;
+  for(auto const& str:arr){
+    ss << str;
+  }
+  return ss.str();
+}

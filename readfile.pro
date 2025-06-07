@@ -23,6 +23,7 @@ SOURCES += \
     $$PWD/the_framework/enviroment/standard_detect.cpp \
     $$PWD/the_framework/math/math_division.cpp \
     $$PWD/the_framework/strings/Stringhelper.cpp \
+    $$PWD/the_framework/utility/ansiconsolecolor.cpp \
     $$PWD/the_framework/utility/terminal.cpp
 
 
