@@ -3,6 +3,7 @@
 
 #include <string>
 #include <string_view>
+#include <span>
 
 #include "dtypes.h"
 
@@ -38,7 +39,7 @@ static auto const slowblink_off = std::string_view("\033[25m");
 
 
 //fast Blink
-static auto const fatblink_on = std::string_view("\033[6m");
+static auto const fastblink_on = std::string_view("\033[6m");
 //fast Blink off
 static auto const fastblink_off = std::string_view("\033[25m");
 
@@ -92,6 +93,24 @@ static auto const fgpink       = std::string_view("\033[95m");
 static auto const fghighcyan   = std::string_view("\033[96m");
 static auto const fgwhite      = std::string_view("\033[97m");
 
+static constexpr std::string_view const blau           = "\033[38;5;63m";
+static constexpr std::string_view const orange         = "\033[38;5;202m";
+static constexpr std::string_view const redish_pink    = "\033[38;5;167m";
+static constexpr std::string_view const mint_green     = "\033[38;5;148m";
+static constexpr std::string_view const dark_grey      = "\033[38;5;236m";
+static constexpr std::string_view const brown          = "\033[38;5;130m";
+static constexpr std::string_view const light_yellow   = "\033[38;5;190m";
+static constexpr std::string_view const light_brownish = "\033[38;5;180m";
+static constexpr std::string_view const light_beige    = "\033[38;5;255m";
+static constexpr std::string_view const light_grey     = "\033[38;5;250m";
+static constexpr std::string_view const bright_cyan    = "\033[38;5;46m";
+static constexpr std::string_view const bright_red     = "\033[38;5;196m";
+static constexpr std::string_view const bright_orange  = "\033[38;5;208m";
+static constexpr std::string_view const bright_yellow1 = "\033[38;5;111m";
+static constexpr std::string_view const bright_yellow2 = "\033[38;5;220m";
+
+//--------------------------------------------------
+// Background
 //--------------------------------------------------
 
 static auto const bgblack = std::string_view("\033[40m");
@@ -124,7 +143,8 @@ static auto const bgdefault = std::string_view("\033[49m");
 //--------------------------------------------------
 
 enum class colorsel_e:u8{
-  reset = 0,
+  none = 0,
+  reset,
   black,
   red,
   green,
@@ -155,6 +175,7 @@ enum class modify_e:u8{
 };
 using modify_e_T = enum modify_e;
 
+std::string colorize(std::span<std::string_view> const arr, colorsel_T const csel, modify_e const msel=modify_e::none);
 std::string colorize(std::string_view const sv, colorsel_T const csel, modify_e const msel=modify_e::none);
 
 } //namespace

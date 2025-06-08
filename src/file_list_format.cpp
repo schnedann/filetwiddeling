@@ -122,9 +122,6 @@ std::vector<std::string> File_Fkt::List_Format::get_permissions_lst(std::set<fs:
 
 std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::directory_entry> const& list){
 
-  static constexpr std::string_view const blau63    = "\033[38;5;63m";
-  static constexpr std::string_view const orange202 = "\033[38;5;202m";
-
   static constexpr std::array<std::string_view,7> const Texts = {
     "BlockFile",
     "CharacterFile",
@@ -145,7 +142,7 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
     }
   }
 
-  std::vector<std::string> what_entry_lst(list.size(),std::string(all_maxl+2*blau63.size(),' '));
+  std::vector<std::string> what_entry_lst(list.size(),std::string(all_maxl+2*Utility::AnsiColor::orange.size(),' '));
   {
     {
       size_t idx = 0;
@@ -207,11 +204,13 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
           what_entry_lst.at(idx) = std::string(Texts.at(1));
         }*/
         if(entry.is_regular_file()){
-          what_entry_lst.at(idx) = std::string(blau63) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+          std::array<std::string_view,2> tmp_arr = {Utility::AnsiColor::light_grey,what_entry_lst.at(idx)};
+          what_entry_lst.at(idx) = Utility::AnsiColor::colorize(std::span(tmp_arr.data(),tmp_arr.size()),Utility::AnsiColor::colorsel_e::none);
         }
 
         if(entry.is_directory()){
-          what_entry_lst.at(idx) = std::string(orange202) + what_entry_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+          std::array<std::string_view,2> tmp_arr = {Utility::AnsiColor::light_brownish,what_entry_lst.at(idx)};
+          what_entry_lst.at(idx) = Utility::AnsiColor::colorize(std::span(tmp_arr.data(),tmp_arr.size()),Utility::AnsiColor::colorsel_e::none);
         }
         if(entry.is_fifo()){
           what_entry_lst.at(idx) = std::string(Texts.at(4));
@@ -373,9 +372,13 @@ std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::direct
       size_t idx = 0;
       for(auto const& entry:list){
         if(!entry.is_directory()){
-          path_lst.at(idx) = std::string("\033[38;5;111m") + std::string(Utility::AnsiColor::bold_on) + path_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+          std::array<std::string_view,2> tmp_arr = {Utility::AnsiColor::bright_yellow1,path_lst.at(idx)};
+          path_lst.at(idx) = Utility::AnsiColor::colorize(std::span(tmp_arr.data(),tmp_arr.size()),
+                                                          Utility::AnsiColor::colorsel_e::none,
+                                                          Utility::AnsiColor::modify_e::bold);
         }else{
-          path_lst.at(idx) = std::string("\033[38;5;148m") + path_lst.at(idx) + std::string(Utility::AnsiColor::reset_all);
+          std::array<std::string_view,2> tmp_arr = {Utility::AnsiColor::mint_green,path_lst.at(idx)};
+          path_lst.at(idx) = Utility::AnsiColor::colorize(std::span(tmp_arr.data(),tmp_arr.size()),Utility::AnsiColor::colorsel_e::none);
         }
 
         ++idx;

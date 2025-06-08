@@ -182,6 +182,7 @@ int main(int argc, char* argv[]){
       { //Formated output
 
         auto const line = Utility::Strings::Smply("─",twidth);
+        auto const vdelim = Utility::AnsiColor::colorize(" | ",Utility::AnsiColor::colorsel_e::grey);
 
         std::vector<std::thread> threads;
 
@@ -233,13 +234,12 @@ int main(int argc, char* argv[]){
             std::cout << line << '\n';
           }
 
-
           std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
           std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
-                    << path_lst.at(idx) << " | "
-                    << file_size_lst.at(idx) << " | "
-                    << what_entry_lst.at(idx) << " | "
-                    << permissions_lst.at(idx) << " | "
+                    << path_lst.at(idx) << vdelim
+                    << file_size_lst.at(idx) << vdelim
+                    << what_entry_lst.at(idx) << vdelim
+                    << permissions_lst.at(idx) << vdelim
                     << Utility::AnsiColor::colorize(std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21),Utility::AnsiColor::colorsel_e::high_blue)
                     << '\n';
 
