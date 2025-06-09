@@ -13,6 +13,7 @@
 #include "file_list_format.h"
 #include "evaluate_args.h"
 #include "terminal.h"
+#include "Stringhelper.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall" // Ignore all warnings
@@ -156,10 +157,45 @@ int main(int argc, char* argv[]){
 
     std::set<fs::directory_entry> file_lst;
 
+    enum class sizefilter_mode_e:u8{
+      none = 0,
+      range,
+      greater_or_equal,
+      smaller_or_equal
+    };
+    using sizefilter_mode_T = enum sizefilter_mode_e;
+
+    sizefilter_mode_T sfm = sizefilter_mode_e::greater_or_equal;
+    size_t sf_para_1 = 100*1024;
+    size_t sf_para_2 = 0;
+
     File_Lst::list_worker(fs_target,
                           file_lst,
                           {[](fs::directory_entry const de)->bool{
-                            return true;}
+                            return true;},
+                           [sfm,sf_para_1,sf_para_2](fs::directory_entry const de)->bool{
+                             bool acceptance = false;
+
+                             if(de.is_regular_file()){
+                               size_t file_size = fs::file_size(de);
+                               switch (sfm) {
+                               case sizefilter_mode_e::range:{
+                                 acceptance = (file_size >= sf_para_1) && (sf_para_1 <= sf_para_2);
+                                 break;
+                               }
+                               case sizefilter_mode_e::greater_or_equal:{
+                                 acceptance = (file_size >= sf_para_1);
+                                 break;
+                               }
+                               case sizefilter_mode_e::smaller_or_equal:{
+                                 acceptance = (file_size <= sf_para_1);
+                                 break;
+                               }
+                               default:
+                                 break;
+                               }
+                             }
+                             return acceptance;}
                           },recursive);
 
     //Informative File List
@@ -207,13 +243,21 @@ int main(int argc, char* argv[]){
   }
   default:
 
-    std::cout << "Welcome to the Filetwiddleing Tool" << "\n";
+    static constexpr std::string_view const welcome = "Welcome to the Filetwiddleing Tool";
+    auto const line = Utility::Strings::Smply("─",welcome.size());
 
+    std::cout << line << "\n";
+    std::cout << welcome.data() << "\n";
+    std::cout << line << "\n";
+
+    std::cout << "Cmd-Args:" << "\n";
     size_t idx=0;
     auto const argspan = std::span(argv,argc);
     for(auto cstr:argspan){
       std::cout << "[" << idx << "]: " << cstr << "\n";
     }
+
+    std::cout << line << "\n";
 
     std::cout << options.help() << std::endl;
     exit(EXIT_SUCCESS);
