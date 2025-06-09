@@ -8,17 +8,11 @@
 #include "dtypes.h"
 #include "file_fkt.h"
 
-namespace File_Fkt::List_Format {
+namespace File_Lst::Format {
 
-size_t get_max_path_length(std::set<fs::directory_entry> const& list);
-
-std::vector<std::string> get_permissions_lst(std::set<fs::directory_entry> const& list);
-
-std::vector<std::string> get_what_entry_lst(std::set<fs::directory_entry> const& list);
-
-std::vector<std::string> get_file_size_lst(std::set<fs::directory_entry> const& list);
-
-std::vector<std::string> get_path_lst(std::set<fs::directory_entry> const& list, size_t const maxpath);
+void print_informative_list(std::set<fs::directory_entry> const file_lst,
+                            size_t const term_width,
+                            size_t const maxpath);
 
 } //namespace
 

@@ -5,9 +5,13 @@
 #include <sstream>
 #include <vector>
 #include <set>
+#include <thread>
+#include <cmath>
+#include <chrono>
 
 #include "dtypes.h"
 #include "file_fkt.h"
+#include "Stringhelper.h"
 #include "ansiconsolecolor.h"
 #include "enviroment_detection.h"
 
@@ -45,11 +49,10 @@ auto const str_extend = [](std::string& str, size_t target_length){
   return;
 };
 
-} //namespace
-
 //---
 
-size_t File_Fkt::List_Format::get_max_path_length(std::set<fs::directory_entry> const& list){
+/* currently unused
+size_t get_max_path_length(std::set<fs::directory_entry> const& list){
   size_t path_maxl = 0;
   //longest path
   for(auto const& entry:list){
@@ -59,9 +62,11 @@ size_t File_Fkt::List_Format::get_max_path_length(std::set<fs::directory_entry> 
     }
   }
   return path_maxl;
-}
+}*/
 
-std::vector<std::string> File_Fkt::List_Format::get_permissions_lst(std::set<fs::directory_entry> const& list){
+//---
+
+std::vector<std::string> get_permissions_lst(std::set<fs::directory_entry> const& list){
   std::vector<std::string> permissions_lst(list.size());
   {
     size_t idx = 0;
@@ -120,7 +125,9 @@ std::vector<std::string> File_Fkt::List_Format::get_permissions_lst(std::set<fs:
   return permissions_lst;
 }
 
-std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::directory_entry> const& list){
+//---
+
+std::vector<std::string> get_what_entry_lst(std::set<fs::directory_entry> const& list){
 
   static constexpr std::array<std::string_view,7> const Texts = {
     "BlockFile",
@@ -230,7 +237,9 @@ std::vector<std::string> File_Fkt::List_Format::get_what_entry_lst(std::set<fs::
   return what_entry_lst;
 }
 
-std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::directory_entry> const& list){
+//---
+
+std::vector<std::string> get_file_size_lst(std::set<fs::directory_entry> const& list){
   std::vector<std::string> file_size_lst(1 + list.size());
   {
     auto const fsize_fmt = [](size_t const fsize)->std::string{
@@ -320,7 +329,9 @@ std::vector<std::string> File_Fkt::List_Format::get_file_size_lst(std::set<fs::d
   return file_size_lst;
 }
 
-std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::directory_entry> const& list, size_t const maxpath){
+//---
+
+std::vector<std::string> get_path_lst(std::set<fs::directory_entry> const& list, size_t const maxpath){
   std::vector<std::string> path_lst(list.size());
   {
     {
@@ -387,4 +398,81 @@ std::vector<std::string> File_Fkt::List_Format::get_path_lst(std::set<fs::direct
 
   } //scope
   return path_lst;
+}
+
+//---
+
+} //namespace
+
+void File_Lst::Format::print_informative_list(std::set<fs::directory_entry> const file_lst,
+                                                   size_t const term_width,
+                                                   size_t const maxpath){
+  auto const line = Utility::Strings::Smply("─",term_width);
+  auto const vdelim = Utility::AnsiColor::colorize(" | ",Utility::AnsiColor::colorsel_e::grey);
+
+  std::vector<std::thread> threads;
+
+  using str_lst_T = std::vector<std::string>;
+
+  str_lst_T permissions_lst;
+  {
+    auto const pm_fct = [&file_lst,&permissions_lst](){
+      permissions_lst = get_permissions_lst(file_lst);
+    };
+    threads.emplace_back(pm_fct);
+  }
+
+  str_lst_T what_entry_lst;
+  {
+    auto const we_fct = [&file_lst,&what_entry_lst](){
+      what_entry_lst = get_what_entry_lst(file_lst);
+    };
+    threads.emplace_back(we_fct);
+  }
+
+  str_lst_T file_size_lst;
+  {
+    auto const fs_fct = [&file_lst,&file_size_lst](){
+      file_size_lst = get_file_size_lst(file_lst);
+    };
+    threads.emplace_back(fs_fct);
+  }
+
+  str_lst_T path_lst;
+  {
+    auto const pl_fct = [&file_lst,&path_lst,maxpath](){
+      path_lst = get_path_lst(file_lst,maxpath);
+    };
+    threads.emplace_back(pl_fct);
+  }
+
+  // Join all threads
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  size_t idx_width = 1 + std::log10(file_lst.size());
+
+  size_t idx = 0;
+  for(auto const& entry:file_lst){
+
+    if(entry.is_directory()){
+      std::cout << line << '\n';
+    }
+
+    std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
+    std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
+              << path_lst.at(idx) << vdelim
+              << file_size_lst.at(idx) << vdelim
+              << what_entry_lst.at(idx) << vdelim
+              << permissions_lst.at(idx) << vdelim
+              << Utility::AnsiColor::colorize(std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21),Utility::AnsiColor::colorsel_e::high_blue)
+              << '\n';
+
+    ++idx;
+  }
+
+  std::cout << file_lst.size() << " Entries found | acc. Size: " << file_size_lst.at(idx) << '\n';
+
+  return;
 }

@@ -1,14 +1,10 @@
 #include <iostream>
-#include <iomanip>
 #include <array>
 #include <string>
 #include <cstdlib>
 #include <vector>
 #include <set>
-#include <cmath>
-#include <format>
-#include <chrono>
-#include <thread>
+
 #include <span>
 
 #include "dtypes.h"
@@ -16,8 +12,6 @@
 #include "file_list.h"
 #include "file_list_format.h"
 #include "evaluate_args.h"
-#include "Stringhelper.h"
-#include "ansiconsolecolor.h"
 #include "terminal.h"
 
 #pragma GCC diagnostic push
@@ -168,95 +162,9 @@ int main(int argc, char* argv[]){
                             return true;}
                           },recursive);
 
-    /*if(recursive){
-      std::ranges::for_each(
-        std::filesystem::recursive_directory_iterator{fs_target},
-        [&file_lst](const auto& dir_entry){
-          //std::cout << dir_entry << '\n';
-          file_lst.insert(dir_entry);
-          return;
-        });
-    }else{
-      std::ranges::for_each(
-        std::filesystem::directory_iterator{fs_target},
-        [&file_lst](const auto& dir_entry){
-          //std::cout << dir_entry << '\n';
-          file_lst.insert(dir_entry);
-          return;
-        });
-    }*/
-
     //Informative File List
     if(information){
-      { //Formated output
-
-        auto const line = Utility::Strings::Smply("─",twidth);
-        auto const vdelim = Utility::AnsiColor::colorize(" | ",Utility::AnsiColor::colorsel_e::grey);
-
-        std::vector<std::thread> threads;
-
-        using str_lst_T = std::vector<std::string>;
-
-        str_lst_T permissions_lst;
-        {
-          auto const pm_fct = [&file_lst,&permissions_lst](){
-            permissions_lst = File_Fkt::List_Format::get_permissions_lst(file_lst);
-          };
-          threads.emplace_back(pm_fct);
-        }
-
-        str_lst_T what_entry_lst;
-        {
-          auto const we_fct = [&file_lst,&what_entry_lst](){
-            what_entry_lst = File_Fkt::List_Format::get_what_entry_lst(file_lst);
-          };
-          threads.emplace_back(we_fct);
-        }
-
-        str_lst_T file_size_lst;
-        {
-          auto const fs_fct = [&file_lst,&file_size_lst](){
-            file_size_lst = File_Fkt::List_Format::get_file_size_lst(file_lst);
-          };
-          threads.emplace_back(fs_fct);
-        }
-
-        str_lst_T path_lst;
-        {
-          auto const pl_fct = [&file_lst,&path_lst,maxpath](){
-            path_lst = File_Fkt::List_Format::get_path_lst(file_lst,maxpath);
-          };
-          threads.emplace_back(pl_fct);
-        }
-
-        // Join all threads
-        for (auto& t : threads) {
-          t.join();
-        }
-
-        size_t idx_width = 1 + std::log10(file_lst.size());
-
-        size_t idx = 0;
-        for(auto const& entry:file_lst){
-
-          if(entry.is_directory()){
-            std::cout << line << '\n';
-          }
-
-          std::filesystem::file_time_type ftime = std::filesystem::last_write_time(entry);
-          std::cout << Utility::AnsiColor::fggrey << "[" << std::setw(idx_width) << idx << "] " << Utility::AnsiColor::reset_all
-                    << path_lst.at(idx) << vdelim
-                    << file_size_lst.at(idx) << vdelim
-                    << what_entry_lst.at(idx) << vdelim
-                    << permissions_lst.at(idx) << vdelim
-                    << Utility::AnsiColor::colorize(std::format("{0:%F}T{0:%R},{0:%S}", ftime).substr(0,21),Utility::AnsiColor::colorsel_e::high_blue)
-                    << '\n';
-
-          ++idx;
-        }
-
-        std::cout << file_lst.size() << " Entries found | acc. Size: " << file_size_lst.at(idx) << '\n';
-      } //scope
+      File_Lst::Format::print_informative_list(file_lst,twidth,maxpath);
     //Basic File List
     }else{
       for(auto const& entry:file_lst){
