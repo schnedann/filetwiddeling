@@ -24,12 +24,14 @@ SOURCES += \
     $$PWD/the_framework/math/math_division.cpp \
     $$PWD/the_framework/strings/Stringhelper.cpp \
     $$PWD/the_framework/utility/ansiconsolecolor.cpp \
-    $$PWD/the_framework/utility/terminal.cpp
+    $$PWD/the_framework/utility/terminal.cpp \
+    src/file_list.cpp
 
 
 HEADERS += \
     $$PWD/src/evaluate_args.h \
     $$PWD/inc/file_fkt.h \
+    $$PWD/src/file_list.h \
     $$PWD/inc/file_list_format.h \
     $$PWD/inc/dtypes.h \
     $$PWD/inc/global_config.h \
@@ -59,7 +61,19 @@ HEADERS += \
     $$PWD/the_framework/strings/Stringhelper.h \
     $$PWD/the_framework/utility/ansiconsolecolor.h \
     $$PWD/the_framework/utility/terminal.h \
-    $$PWD/the_framework/versioning/code_stamp.h
+    $$PWD/the_framework/versioning/code_stamp.h \
+    $$PWD/external/GSL/include/gsl/algorithm \
+    $$PWD/external/GSL/include/gsl/assert \
+    $$PWD/external/GSL/include/gsl/byte \
+    $$PWD/external/GSL/include/gsl/gsl \
+    $$PWD/external/GSL/include/gsl/narrow \
+    $$PWD/external/GSL/include/gsl/pointers \
+    $$PWD/external/GSL/include/gsl/span \
+    $$PWD/external/GSL/include/gsl/span_ext \
+    $$PWD/external/GSL/include/gsl/util \
+    $$PWD/external/GSL/include/gsl/zstring \
+    $$PWD/external/cxxopts/include/cxxopts.hpp
+
 
 INCLUDEPATH += \
     $$PWD/inc \
@@ -80,4 +94,5 @@ DISTFILES += \
   .gitignore \
   .gitattributes \
   CMakeLists.txt \
-  build.sh
+  build.sh \
+  external/GSL/include/CMakeLists.txt

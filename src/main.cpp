@@ -2,11 +2,9 @@
 #include <iomanip>
 #include <array>
 #include <string>
-#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <set>
-#include <ranges>
 #include <cmath>
 #include <format>
 #include <chrono>
@@ -15,13 +13,17 @@
 
 #include "dtypes.h"
 #include "file_fkt.h"
+#include "file_list.h"
 #include "file_list_format.h"
 #include "evaluate_args.h"
 #include "Stringhelper.h"
 #include "ansiconsolecolor.h"
 #include "terminal.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" // Ignore all warnings
 #include <cxxopts.hpp>
+#pragma GCC diagnostic pop
 
 using namespace std;
 
@@ -60,10 +62,12 @@ int main(int argc, char* argv[]){
       ("ls,list_dir","List Directory - plain list or add -i to get a nice colored and formated output", cxxopts::value<bool>()->default_value("false"))
       ("playground", "Test Code", cxxopts::value<bool>()) // a bool parameter
       ("cp,copy","copy File or Directory", cxxopts::value<bool>()->default_value("false"))
+      ("fs,filtersize","Filter for Size - only Opbjects in Range are processed", cxxopts::value<std::string>()->no_implicit_value())
+      ("fn,filtername","Filter for Name - only matching Opbjects are processed", cxxopts::value<std::string>()->no_implicit_value())
       ("i,information","decorate output with information", cxxopts::value<bool>()->default_value("false"))
       ("r,recursive","goto subdirectories also", cxxopts::value<bool>()->default_value("false"))
       ("s,source", "Input Source File or Directory", cxxopts::value<std::string>())
-      ("t,target", "Modification Target File or Directory", cxxopts::value<std::string>())
+      ("t,target", "Target File or Directory to work on (including Modifications)", cxxopts::value<std::string>())
       ("h,help","Display Help", cxxopts::value<bool>()->default_value("false"))
       ("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
       /*
@@ -152,14 +156,19 @@ int main(int argc, char* argv[]){
         fs_target = fs::path(uro.at(0));
 
         EvalArgs::is_directory_n_exists(fs_target);
-
       }
     }
     std::cout << "Target: " << fs_target << "\n";
 
     std::set<fs::directory_entry> file_lst;
 
-    if(recursive){
+    File_Lst::list_worker(fs_target,
+                          file_lst,
+                          {[](fs::directory_entry const de)->bool{
+                            return true;}
+                          },recursive);
+
+    /*if(recursive){
       std::ranges::for_each(
         std::filesystem::recursive_directory_iterator{fs_target},
         [&file_lst](const auto& dir_entry){
@@ -175,7 +184,7 @@ int main(int argc, char* argv[]){
           file_lst.insert(dir_entry);
           return;
         });
-    }
+    }*/
 
     //Informative File List
     if(information){
