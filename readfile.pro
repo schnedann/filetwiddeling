@@ -29,9 +29,9 @@ SOURCES += \
 
 
 HEADERS += \
-    $$PWD/src/evaluate_args.h \
+    $$PWD/inc/evaluate_args.h \
     $$PWD/inc/file_fkt.h \
-    $$PWD/src/file_list.h \
+    $$PWD/inc/file_list.h \
     $$PWD/inc/file_list_format.h \
     $$PWD/inc/dtypes.h \
     $$PWD/inc/global_config.h \

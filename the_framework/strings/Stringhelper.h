@@ -150,7 +150,7 @@ template<class T> T str2unum(string_nc const& str, conmode_t const dechex){
 
   if(dechex==conmode::asHEX){
     size_t pos = str.find("0x",0);
-    std::string croped = str.substr(pos,(str.length()-pos));
+    auto const croped = std::string(str.substr(pos,(str.length()-pos)));
      ss << croped;
      ss >> std::hex >> num;
   }else{
@@ -170,7 +170,7 @@ template<class T> T str2num(string_nc const& str, conmode_t const dechex){
 
   if(dechex==conmode::asHEX){
     size_t pos = str.find("0x",0);
-    std::string croped = str.substr(pos,(str.length()-pos));
+    auto const croped = std::string(str.substr(pos,(str.length()-pos)));
      ss << croped;
      ss >> std::hex >> num;
   }else{
