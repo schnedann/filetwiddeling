@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <set>
-
+#include <regex>
 #include <span>
 
 #include "dtypes.h"
@@ -157,6 +157,8 @@ int main(int argc, char* argv[]){
 
     std::set<fs::directory_entry> file_lst;
 
+    //---
+
     enum class sizefilter_mode_e:u8{
       none = 0,
       range,
@@ -169,33 +171,54 @@ int main(int argc, char* argv[]){
     size_t sf_para_1 = 100*1024;
     size_t sf_para_2 = 0;
 
+    //---
+
+    std::string name_regex;
+
+    //---
+
     File_Lst::list_worker(fs_target,
                           file_lst,
-                          {[](fs::directory_entry const de)->bool{
+                          {
+                          //Dummy Worker (at least one must exist!)
+                          [](fs::directory_entry const de)->bool{
                             return true;},
-                           [sfm,sf_para_1,sf_para_2](fs::directory_entry const de)->bool{
-                             bool acceptance = false;
 
-                             if(de.is_regular_file()){
-                               size_t file_size = fs::file_size(de);
-                               switch (sfm) {
-                               case sizefilter_mode_e::range:{
-                                 acceptance = (file_size >= sf_para_1) && (sf_para_1 <= sf_para_2);
-                                 break;
-                               }
-                               case sizefilter_mode_e::greater_or_equal:{
-                                 acceptance = (file_size >= sf_para_1);
-                                 break;
-                               }
-                               case sizefilter_mode_e::smaller_or_equal:{
-                                 acceptance = (file_size <= sf_para_1);
-                                 break;
-                               }
-                               default:
-                                 break;
-                               }
-                             }
-                             return acceptance;}
+                          //File-Size Worker
+                          [sfm,sf_para_1,sf_para_2](fs::directory_entry const de)->bool{
+                            bool acceptance = false;
+
+                            if(de.is_regular_file()){
+                              size_t file_size = fs::file_size(de);
+                              switch (sfm) {
+                              case sizefilter_mode_e::range:{
+                                acceptance = (file_size >= sf_para_1) && (sf_para_1 <= sf_para_2);
+                                break;
+                              }
+                              case sizefilter_mode_e::greater_or_equal:{
+                                acceptance = (file_size >= sf_para_1);
+                                break;
+                              }
+                              case sizefilter_mode_e::smaller_or_equal:{
+                                acceptance = (file_size <= sf_para_1);
+                                break;
+                              }
+                              default:
+                                acceptance = true;
+                                break;
+                              }
+                            }
+                            return acceptance;},
+
+                          //File-Name Worker
+                          [name_regex](fs::directory_entry const de)->bool{
+                            bool acceptance = true;
+                            if(!name_regex.empty()){
+                              std::regex filter(name_regex);
+
+                              acceptance = std::regex_match(de.path().string(),filter);
+                            }
+                            return acceptance;}
                           },recursive);
 
     //Informative File List
